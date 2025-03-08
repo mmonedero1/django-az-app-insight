@@ -1,0 +1,4 @@
+django
+djangorestframework
+azure-monitor-opentelemetry
+python-dotenv
