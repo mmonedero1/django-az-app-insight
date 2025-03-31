@@ -1,8 +1,10 @@
 services:
   web:
     build: .
-    container_name: django-wowproject
+    container_name: django-az-app-insight
     command: python manage.py runserver 0.0.0.0:8000
+    env_file:
+      - C:\Temp\Pruebas_Python\Django\django-az-app-insight\config\.env
     volumes:
       - .:/app
     ports:

@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'app_name',
+    'drf_spectacular',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -47,9 +50,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app_name.middleware.LogRequestResponseBodyMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
 
 TEMPLATES = [
     {
@@ -69,16 +77,45 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+from dotenv import load_dotenv
+
+ # Load environment variables from .env file
+load_dotenv()
+
+# Leer archivo .env
+
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+DB_HOST = os.getenv('DB_HOST')
+DB_NAME = os.getenv('DB_NAME')
+DB_USER = os.getenv('DB_USER')
+DB_PASS = os.getenv('DB_PASS')
+DB_PORT = os.getenv('DB_PORT')
+DB_SSLMODE = os.getenv('DB_SSLMODE')
+
+# Dependiendo del entorno, se cargan las variables de la base de datos de test o producción
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE'    : 'django.db.backends.postgresql',
+        'NAME'      : DB_NAME,
+        'USER'      : DB_USER,
+        'PASSWORD'  : DB_PASS,
+        'HOST'      : DB_HOST,
+        'PORT'      : DB_PORT,
+        'OPTIONS': {
+            'sslmode': DB_SSLMODE,  # Es obligatorio usar SSL en Azure PostgreSQL
+        },
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
@@ -121,19 +158,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# os.environ["APPLICATIONINSIGHTS_CONNECTION_STRING"] = "InstrumentationKey=40b60f40-d2a2-4492-84dd-54390a350c97;IngestionEndpoint=https://centralus-2.in.applicationinsights.azure.com/;LiveEndpoint=https://centralus.livediagnostics.monitor.azure.com/;ApplicationId=9cb2f10b-1168-4847-a292-33be06b5bb00"
-
-from dotenv import load_dotenv
-
- # Load environment variables from .env file
-load_dotenv()
-
-# Leer archivo .env
-
-
-# Variables
-APPLICATIONINSIGHTS_CONNECTION_STRING = os.getenv('APPLICATIONINSIGHTS_CONNECTION_STRING')
 
 if os.getenv('APPLICATIONINSIGHTS_CONNECTION_STRING'):
     print('Enabling OpenTelemetry...')
