@@ -1,4 +1,6 @@
 django
 djangorestframework
+psycopg2
 azure-monitor-opentelemetry
 python-dotenv
+drf-spectacular
